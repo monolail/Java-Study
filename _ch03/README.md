@@ -1,18 +1,65 @@
-## Getting Started
+# 03. 연산자 (Operators)
+연산자(Operator)의 활용과 연산 과정에서 발생할 수 있는 형변환(Casting), 오버플로우(Overflow), 그리고 소수점 반올림(Math.round)을 학습한 내용을 정리한 공간입니다.
+---
+##  파일 구성 및 학습 내용
+### 1. [Ex3_1.java](./src/Ex3_1.java) - 증감 연산자 (Increment & Decrement)
+- **증감 연산자 (`++`, `--`)**: 피연산자의 값을 1 증가시키거나 감소시키는 연산자입니다.
+- **전위형(Prefix) vs 후위형(Postfix)**:
+  - **전위형 (`++i`)**: 피연산자의 값을 **먼저 1 증가**시킨 후, 그 값을 식에 사용하거나 다른 변수에 할당합니다.
+  - **후위형 (`i++`)**: 피연산자의 현재 값을 **먼저 식에 사용하거나 할당**한 후, 피연산자의 값을 1 증가시킵니다.
+  ```java
+  int i = 5;
+  int j = i++; // j에 i의 현재 값인 5가 저장된 후, i가 6이 됨. (후위형)
+  
+  i = 5;
+  i++;
+  j = i;       // i가 먼저 6이 된 후, j에 6이 저장됨. (전위형과 동일한 결과)
+  ```
+---
+### 2. [Ex3_2.java](./src/Ex3_2.java) - 형변환 (Type Casting)
+- **형변환**: 변수나 리터럴의 타입을 다른 타입으로 변환하는 것입니다.
+- **문자형(`char`)으로의 형변환**:
+  - `int` 또는 `float` 형태의 값을 `char` 타입으로 캐스팅하면 유니코드(ASCII) 코드값에 해당하는 문자로 변환됩니다.
+  - 실수형(`float`, `double`)을 정수형이나 문자형으로 변환할 때는 **소수점 이하 자리가 버려집니다(절사)**.
+  ```java
+  int i = 65;
+  char ch = (char)i;      // 'A' (아스키코드 65에 해당)
+  
+  float f = 65.6f;
+  char ch2 = (char)f;    // 65.6f의 소수점 이하가 버려져 65가 되고, 이는 문자 'A'가 됨
+  ```
+---
+### 3. [Ex3_3.java](./src/Ex3_3.java) - 산술 오버플로우와 실수 반올림
+- **산술 오버플로우 (Arithmetic Overflow)**:
+  - 정수형 연산 시 데이터 타입의 표현 범위를 초과하면 잘못된 값(음수 등)이 나오는 현상입니다.
+  - `int` 타입(약 -21억 ~ 21억)끼리 곱한 결과가 범위를 초과할 경우, 결과 변수를 `long`으로 선언하더라도 **이미 곱셈 과정에서 오버플로우가 발생한 상태로 대입**됩니다.
+  - **해결책**: 연산에 참여하는 변수 중 최소 하나 이상을 미리 `long` 타입으로 형변환하여 연산 전체가 `long` 타입으로 진행되도록 해야 합니다.
+  ```java
+  int a = 1_000_000;
+  int b = 2_000_000;
+  
+  long c1 = a * b;        // 오버플로우 발생하여 잘못된 값 출력 (-1454759936)
+  long c2 = (long)a * b;  // 올바른 값 출력 (2000000000000)
+  ```
+- **실수의 반올림과 절사 (`Math.round`)**:
+  - `Math.round()`는 소수점 첫째 자리에서 반올림하여 정수(`long`) 값을 반환합니다.
+  - 원하는 소수점 아래 N번째 자리까지 표현하고 싶을 때는 **10의 거듭제곱을 곱한 뒤 반올림하고, 다시 같은 수(실수 형태)로 나누는 방식**을 사용합니다.
+  ```java
+  double pi = 3.141592;
+  
+  // 1. 잘못된 나눗셈 (정수 나눗셈으로 인해 소수점이 버려짐)
+  System.out.println(Math.round(pi * 1000) / 1000);   // 3142 / 1000 ➔ 3
+  
+  // 2. 올바른 나눗셈 (실수 타입으로 나누어 소수점 유지)
+  System.out.println((double)Math.round(pi * 1000) / 1000); // 3.142
+  ```
+---
+##  핵심 비교 요약
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
-
-## Folder Structure
-
-The workspace contains two folders by default, where:
-
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+| 개념 | 주요 특징 및 주의사항 | 예시 |
+| :--- | :--- | :--- |
+| **전위형 (`++i`)** | 증가 후 대입 | `j = ++i;` (i값 증가 ➔ j에 대입) |
+| **후위형 (`i++`)** | 대입 후 증가 | `j = i++;` (j에 대입 ➔ i값 증가) |
+| **정수 오버플로우** | `int` 범위를 넘어가는 연산은 형변환 필수 | `(long)a * b` |
+| **Math.round()** | 소수점 첫째 자리 반올림, 정수 반환 | `Math.round(3.14) ➔ 3` |
+| **실수형 나눗셈** | 소수점 유지를 위해 나누는 값을 실수형(`double`)으로 지정 | `값 / 1000.0` 또는 `(double)값 / 1000` |
