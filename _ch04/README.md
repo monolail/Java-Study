@@ -101,7 +101,63 @@
       }
   }
   ```
+---
+### 6. [Ex04_6.java](./src/Ex04_6.java) - 중첩 for문 (구구단)
+- **중첩 `for`문**: 반복문 안에 반복문을 넣어 2차원 구조의 반복을 처리합니다.
+- 바깥쪽 `for`문이 한 번 실행될 때마다 안쪽 `for`문이 처음부터 끝까지 완전히 실행됩니다.
+  ```java
+  for (int i1 = 1; i1 <= 10; i1++) {
+      for (int i2 = 1; i2 <= 10; i2++) {
+          System.out.println(i1 + " * " + i2 + " = " + (i1 * i2));
+      }
+      System.out.println(); // 단(段) 구분을 위한 빈 줄 출력
+  }
 
+---
+### 7. [Ex04_7.java](./src/Ex04_7.java) - do-while문 활용 (숫자 맞추기 게임)
+- do-while문 실전 활용: 사용자 입력을 최소 1회 이상 받아야 하는 상황에 적합합니다.
+- Math.random()으로 1~100 사이의 난수를 생성하고, 정답을 맞출 때까지 반복 입력을 받습니다.
+  ```java
+  int answer = (int)(Math.random() * 100) + 1;
+  int input = 0;
+  Scanner sc = new Scanner(System.in);
+
+  do {
+      System.out.print("1~100 사이의 정수를 입력하세요.");
+      input = sc.nextInt();
+
+      if (input > answer) {
+          System.out.println("더 작은 수를 입력하세요.");
+      } else if (input < answer) {
+          System.out.println("더 큰 수를 입력하세요.");
+      }
+
+  } while (input != answer);   // 정답을 맞출 때까지 반복
+
+  System.out.println("정답입니다.");
+
+---
+### 8. [Ex04_8.java](./src/Ex04_8.java) - 이름 붙은 반복문과 break (Labeled Loop)
+- break 레이블: 중첩 반복문에서 특정 레이블이 붙은 반복문까지 한 번에 탈출합니다.
+- 단순 break는 가장 가까운 반복문 하나만 탈출하지만, break Loop1처럼 레이블을 지정하면 바깥쪽 반복문까지 즉시 탈출합니다.
+  ```java
+  // break Loop1 - 바깥쪽 반복문까지 탈출 (j=5가 되는 순간 전체 종료)
+  Loop1 : for (int i = 2; i <= 9; i++) {
+      for (int j = 1; j <= 9; j++) {
+          if (j == 5)
+              break Loop1;   // Loop1 전체 탈출
+          System.out.println(i + " * " + j + " = " + (i * j));
+      }
+  }
+
+  // break - 안쪽 반복문만 탈출 (각 단(段)에서 j=4까지만 출력)
+  for (int i = 2; i <= 9; i++) {
+      for (int j = 1; j <= 9; j++) {
+          if (j == 5)
+              break;   // 안쪽 for문만 탈출
+          System.out.println(i + " * " + j + " = " + (i * j));
+      }
+  }
 ---
 
 ## 핵심 비교 요약
@@ -115,4 +171,6 @@
 | **`do-while`** | 후검사, 최소 1회 실행 보장 | `do {...} while (x > 0);` |
 | **`break`** | 반복문 즉시 탈출, label과 조합 시 중첩 루프 탈출 가능 | `break outer;` |
 | **`continue`** | 현재 반복의 나머지를 건너뛰고 다음 반복으로 이동 | `if (i%2==0) continue;` |
-
+| **중첩 `for`문** | 바깥 루프 1회 = 안쪽 루프 전체 실행 | `for(...) { for(...) {...} }` |
+| **`Math.random()`** | 0.0 이상 1.0 미만 난수 생성, 범위 조절 필요 | `(int)(Math.random()*100)+1` |
+| **`break 레이블`** | 지정한 레이블의 반복문까지 한 번에 탈출 | `break Loop1;` |
