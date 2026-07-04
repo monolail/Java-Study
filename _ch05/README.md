@@ -1,6 +1,6 @@
 # 05. 배열 (Array)
 
-배열(Array)의 선언과 생성, 초기화 방법, 그리고 배열을 활용한 데이터 처리(합계, 평균, 최대/최솟값)와 String 배열을 이용한 간단한 실습 프로그램을 학습한 내용을 정리한 공간입니다.
+배열(Array)의 선언과 생성, 초기화 방법, 배열을 활용한 데이터 처리(합계, 평균, 최대/최솟값), 2차원 배열, String 주요 메서드, 그리고 Arrays 유틸리티 메서드까지 학습한 내용을 정리한 공간입니다.
 
 ---
 
@@ -101,6 +101,98 @@
 
 ---
 
+### 5. [Ex5_5.java](./src/Ex5_5.java) - 2차원 배열 (선언, 생성, 순회)
+
+- **2차원 배열 선언**: `int[][] score` — 행(row)과 열(column)로 구성된 배열입니다.
+- **`score.length`**: 행의 수(바깥 배열의 크기)를 반환합니다.
+- **`score[i].length`**: i번째 행의 열의 수를 반환합니다.
+- **중첩 `for`문**으로 각 요소를 `score[i][j]` 형태로 접근하여 전체 합계와 평균을 구합니다.
+  ```java
+  int[][] score = {
+      {100, 90, 80, 70, 60},
+      { 90, 80, 70, 60, 50},
+      { 80, 70, 60, 50, 40}
+  };
+
+  int sum = 0, num = 0;
+  for (int i = 0; i < score.length; i++) {        // 행 순회
+      for (int j = 0; j < score[i].length; j++) { // 열 순회
+          sum += score[i][j];
+          num++;
+      }
+  }
+  System.out.println("sum is " + sum);        // 750
+  System.out.println("total mean is " + sum/num); // 50
+  ```
+
+---
+
+### 6. [Ex5_6.java](./src/Ex5_6.java) - 2차원 String 배열 활용 (영단어 퀴즈)
+
+- **2차원 `String` 배열**: `words[i][0]`에 영단어, `words[i][1]`에 한글 뜻을 저장하는 구조입니다.
+- **실전 프로그램**: 한글 뜻을 보여주고 영단어를 맞추는 퀴즈 게임으로, `.equals()`로 정답을 비교합니다.
+  ```java
+  String[][] words = {
+      {"chair",   "의자"},
+      {"computer", "컴퓨터"},
+      {"integer",  "정수"}
+  };
+
+  for (int i = 0; i < words.length; i++) {
+      System.out.printf("Q%d. %s의 영어는 무엇인가?\n", i+1, words[i][1]);
+      String tmp = sc.nextLine();
+      if (tmp.equals(words[i][0])) {
+          System.out.printf("정답입니다.%n");
+      } else {
+          System.out.printf("틀렸습니다. 정답은 %s입니다.%n", words[i][0]);
+      }
+  }
+  ```
+
+---
+
+### 7. [Ex5_7.java](./src/Ex5_7.java) - String 주요 메서드
+
+- **`charAt(index)`**: 문자열에서 특정 인덱스에 있는 문자 하나를 `char` 타입으로 반환합니다.
+- **`substring(start, end)`**: 문자열의 `start` 인덱스부터 `end-1` 인덱스까지의 부분 문자열을 반환합니다 (끝 인덱스 미포함).
+  ```java
+  // 인덱스:  0 1 2 3 4
+  String str = "ABCDE";
+
+  char ch = str.charAt(4);       // 'E' (인덱스 4번 문자)
+  System.out.println(ch);        // E
+
+  String str2 = str.substring(1, 4); // 인덱스 1 ~ 3 → "BCD"
+  System.out.println(str2);          // BCD
+  ```
+
+---
+
+### 8. [Ex5_8.java](./src/Ex5_8.java) - Arrays 유틸리티 메서드
+
+- **`Arrays.sort(arr)`**: 배열을 오름차순으로 정렬합니다.
+- **`Arrays.deepToString(arr)`**: 2차원 이상의 다차원 배열 내용을 문자열로 출력합니다.
+- **`Arrays.deepEquals(a, b)`**: 다차원 배열의 실제 값을 재귀적으로 비교합니다. (`Arrays.equals()`는 참조 주소 비교라 2차원 배열에 부적합)
+- **`Arrays.copyOf(arr, len)`**: 배열의 앞에서부터 `len`개만큼 복사한 새 배열을 반환합니다.
+- **`Arrays.copyOfRange(arr, from, to)`**: `from` 인덱스부터 `to-1` 인덱스까지 복사한 새 배열을 반환합니다.
+  ```java
+  int[] arr = {1, 4, 5, 2, 3};
+
+  Arrays.sort(arr);
+  System.out.println(Arrays.toString(arr)); // [1, 2, 3, 4, 5]
+
+  String[][] str2DD  = {{"aaa","bbb"},{"AAA","BBB"}};
+  String[][] str2DD2 = {{"aaa","bbb"},{"AAA","BBB"}};
+  System.out.println(Arrays.deepToString(str2DD));        // [[aaa, bbb], [AAA, BBB]]
+  System.out.println(Arrays.deepEquals(str2DD, str2DD2)); // true
+  // Arrays.equals(str2DD, str2DD2) → false (참조 주소 비교이므로)
+
+  int[] arr2 = Arrays.copyOf(arr, 3);          // [1, 2, 3]
+  int[] arr3 = Arrays.copyOfRange(arr, 1, 4);  // [2, 3, 4]
+  ```
+
+---
+
 ## 핵심 비교 요약
 
 | 개념 | 주요 특징 및 주의사항 | 예시 |
@@ -112,3 +204,10 @@
 | **`Arrays.toString()`** | 배열 내용을 문자열로 변환하여 출력 | `[100, 90, 80, 70, 60]` |
 | **`char[]` 출력** | `println()` 시 주소가 아닌 내용이 직접 출력 | `abcde` |
 | **`.equals()`** | `String` 값 비교 시 `==` 대신 사용 필수 | `"가위".equals(strArr[tmp])` |
+| **2차원 배열** | `arr[i][j]`로 접근, `arr.length`=행, `arr[i].length`=열 | `int[][] arr = {{1,2},{3,4}};` |
+| **`charAt()`** | 특정 인덱스의 문자 하나를 `char`로 반환 | `"ABCDE".charAt(4)` → `'E'` |
+| **`substring()`** | 시작 인덱스 ~ 끝 인덱스-1 까지 부분 문자열 반환 | `"ABCDE".substring(1,4)` → `"BCD"` |
+| **`Arrays.sort()`** | 배열 오름차순 정렬 (원본 배열 직접 변경) | `Arrays.sort(arr)` |
+| **`Arrays.deepEquals()`** | 다차원 배열 값 재귀 비교 (`equals()`는 참조 비교라 부적합) | `Arrays.deepEquals(a, b)` |
+| **`Arrays.copyOf()`** | 앞에서부터 지정 길이만큼 복사한 새 배열 반환 | `Arrays.copyOf(arr, 3)` |
+| **`Arrays.copyOfRange()`** | 지정 범위(from~to-1)만큼 복사한 새 배열 반환 | `Arrays.copyOfRange(arr, 1, 4)` |
