@@ -86,6 +86,24 @@
 - **다형성 배열**:
   - 조상 타입의 참조변수 배열을 생성하면, 공통 조상을 가진 서로 다른 종류의 자손 객체들을 하나의 배열에 묶어서 효율적으로 관리할 수 있습니다.
 
+### 10. 인터페이스 (Interface)
+- **정의**: 추상 클래스보다 추상화 수준이 높은 미완성 설계도입니다. 오직 추상 메서드와 상수만을 멤버로 가질 수 있습니다.
+- **특징**:
+  - `interface 인터페이스명 { ... }` 으로 선언합니다.
+  - 모든 멤버 변수는 `public static final` 이어야 하며, 이를 생략해도 컴파일러가 자동으로 추가합니다.
+  - 모든 메서드는 `public abstract` 이어야 하며, 이를 생략해도 컴파일러가 자동으로 추가합니다 (JDK 1.8부터는 static/default 메서드도 선언 가능).
+  - 클래스와 달리 **다중 상속**이 가능합니다.
+- **구현 (`implements`)**:
+  - 인터페이스에 정의된 추상 메서드를 완성하기 위해 클래스 선언부에 `implements 인터페이스명`을 지정하고 모든 메서드를 오버라이딩해야 합니다.
+  - **접근 제어자 주의**: 인터페이스의 메서드는 본래 `public abstract`이므로, 자손 클래스에서 오버라이딩할 때는 반드시 `public` 접근 제어자를 지정해야 합니다.
+
+### 11. 인터페이스를 이용한 다형성과 느슨한 결합 (Loose Coupling)
+- **인터페이스 다형성**:
+  - 인터페이스 타입의 참조변수로 구현 객체의 인스턴스를 참조할 수 있습니다.
+  - 메서드의 매개변수나 반환 타입으로 인터페이스를 선언하여 활용할 수 있습니다. 반환 타입이 인터페이스라는 것은 **해당 인터페이스를 구현한 클래스의 인스턴스를 반환한다**는 것을 의미합니다.
+- **느슨한 결합 (Loose Coupling)**:
+  - 직접적인 클래스 의존(A가 B를 직접 사용) 방식에서 인터페이스(A가 인터페이스 I를 사용하고 B가 I를 구현) 방식으로 구조를 분리하면, 구현 클래스(B -> C)가 바뀌어도 호출 클래스(A)의 코드를 수정할 필요가 없어집니다. 이를 통해 클래스 간의 결합도를 낮추고 유연성을 확보할 수 있습니다.
+
 ---
 
 ## 파일 구성 및 학습 내용
@@ -270,6 +288,65 @@ class AudioPlayer extends Player {
 
 ---
 
+### 11. [Ex7_11.java](./src/Ex7_11.java) - 추상 클래스와 다형성 배열
+
+- 공통 조상 추상 클래스인 `Unit`을 상속받는 자손 클래스들(`Marine`, `Tank`, `DropShip`)의 인스턴스를 조상 타입의 배열로 묶어서 일괄 명령(`move()`)을 지시하는 다형성 실습 예제입니다.
+
+```java
+Unit[] group = new Unit[3];
+group[0] = new Marine();
+group[1] = new Tank();
+group[2] = new DropShip();
+
+for (int i = 0; i < group.length; i++) {
+    group[i].move(100, 200); // 일괄 처리 가능
+}
+```
+
+---
+
+### 12. [Ex7_12.java](./src/Ex7_12.java) - 인터페이스의 상속과 구현, 그리고 다형성
+
+- `interface Fightable`을 클래스 `Fighter`가 구현(`implements`)하는 법과 인터페이스 다형성을 실습합니다.
+- 조상 클래스의 추상 메서드를 자식 클래스에서 오버라이딩할 때는 부모보다 좁은 제어자를 사용할 수 없기 때문에, 인터페이스의 `public abstract void move()` 구현 시 반드시 `public`을 붙여야 함을 이해합니다.
+- 반환 타입이 인터페이스 타입인 `Fightable getFightable()` 메서드를 만들어 다형적 리턴 기법을 연습합니다.
+
+```java
+interface Fightable {
+    void move(int x, int y);
+    void attack(Fightable f);
+}
+
+class Fighter extends Unit2 implements Fightable {
+    public void move(int x, int y) { /* 구현부 */ } // public 명시 필수
+    public void attack(Fightable f) { /* 구현부 */ }
+    Fightable getFightable() {
+        return new Fighter(); // 인터페이스 다형성 반환
+    }
+}
+```
+
+---
+
+### 13. [Ex7_13.java](./src/Ex7_13.java) - 인터페이스와 느슨한 결합(Loose Coupling)
+
+- 호출 클래스 `A`가 구현 클래스 `B`를 직접 사용하는 직접적 의존 관계에서, 인터페이스 `I`를 매개체로 두어 B와 C를 유연하게 교체할 수 있도록 만드는 간접적 의존 관계를 실습합니다.
+- 이 구조 변경을 통해 `a.method(new C())` 등으로 주입 대상을 자유롭게 바꿀 수 있어 결합도가 현저히 낮아집니다.
+
+```java
+class A {
+    public void method(I i) { // 인터페이스 I에 의존
+        i.method();
+    }
+}
+
+interface I { void method(); }
+class B implements I { public void method() { /* B 구현 */ } }
+class C implements I { public void method() { /* C 구현 */ } }
+```
+
+---
+
 ## 핵심 비교 요약
 
 | 개념 | 주요 특징 및 주의사항 | 예시 / 범위 |
@@ -290,4 +367,8 @@ class AudioPlayer extends Player {
 | **다형성 (Polymorphism)** | 하나의 참조변수로 여러 타입의 객체를 참조하는 성질 | `Car c = new FireEngine();` |
 | **형변환 (Casting)** | 상속 관계의 참조변수 간 변환. 업캐스팅(생략 가능) / 다운캐스팅(생략 불가) | `fe = (FireEngine)car;` |
 | **instanceof** | 참조변수가 가리키는 인스턴스의 실제 타입을 체크하는 연산자 | `if (car instanceof FireEngine)` |
+| **인터페이스 (Interface)** | 상수(`public static final`)와 추상 메서드(`public abstract`)만 가질 수 있는 미완성 설계도. 다중 상속 가능 | `interface Fightable` |
+| **인터페이스 다형성** | 인터페이스 타입의 참조변수로 구현 객체를 참조하거나, 매개변수/반환타입으로 인터페이스 활용 | `Fightable f = new Fighter();` |
+| **느슨한 결합 (Loose Coupling)** | 인터페이스를 매개체로 구현과 선언을 분리하여 클래스 간의 의존도와 결합도를 낮추는 기법 | A -> I -> B/C |
+
 
