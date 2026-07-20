@@ -41,6 +41,33 @@
   - 구문: `throw new Exception("예외 메시지");`
   - 이를 통해 비즈니스 로직 상 허용되지 않는 조건에서 강제로 예외 흐름을 발생시킬 수 있습니다.
 
+### 6. 메서드에 예외 선언하기 (`throws`)
+- 메서드 선언부에 `throws` 키워드를 사용해 메서드 내에서 발생할 수 있는 예외를 호출하는 메서드에 선언할 수 있습니다.
+  - 구문: `void method() throws Exception1, Exception2 { ... }`
+  - 이는 예외를 직접 처리하지 않고, 메서드를 **호출하는 쪽에 예외 처리를 위임**하여 처리를 분담시키는 유용한 수단입니다.
+  - 예외 선언 시 조상 타입의 예외 클래스를 적으면 자손 타입의 모든 예외도 같이 선언된 것과 다름없습니다 (다형성).
+
+### 7. 사용자 정의 예외 (Custom Exception)
+- 기존의 정의된 예외 클래스 외에 사용자의 비즈니스 필요에 의해 새로운 예외 클래스를 직접 선언하여 사용할 수 있습니다.
+- 보통 Checked 예외가 필요할 때는 `Exception` 클래스를 상속받고, Unchecked 예외가 필요할 때는 `RuntimeException` 클래스를 상속받아 구현합니다.
+- 최근에는 예외 처리를 강제하지 않고 유연성을 주기 위해 **`RuntimeException`을 상속받아 Unchecked 예외로 설계하는 흐름**이 주류를 이룹니다.
+```java
+class MyException extends RuntimeException {
+    MyException(String msg) {
+        super(msg); // 조상 클래스(RuntimeException)의 생성자 호출
+    }
+}
+```
+
+### 8. 연결된 예외 (Chained Exception)
+- 한 예외가 다른 예외를 발생시키는 원인이 되도록 인과관계 체인을 구성하는 기법입니다.
+- **구현 방식**:
+  - `Throwable` 클래스에 내장된 `initCause(Throwable cause)`를 사용하여 발생한 예외에 원인 예외를 등록합니다.
+  - 예외 처리 catch 블록 등에서 `getCause()`를 통해 실제 발생 원인이 되었던 예외를 조회할 수 있습니다.
+- **필요성 / 사용하는 목적**:
+  1. **여러 예외를 하나의 큰 분류의 예외로 묶어서 처리할 때**: 많은 미시적인 예외를 하나의 대표 예외(예: `InstallException`) 안에 원인 예외로 담아 상위 메서드로 던짐으로써 상위 클래스의 예외 선언부를 깔끔하게 유지할 수 있습니다.
+  2. **Checked 예외를 Unchecked 예외로 변환할 때**: 강제적으로 예외 처리를 해야 하는 Checked 예외를 Unchecked 예외(`RuntimeException`)로 감싸서(원인 예외로 등록하여) 던지면 불필요한 예외 선언(`throws`)을 제거하고 프로그래밍 유연성을 크게 높일 수 있습니다.
+
 ---
 
 ## 파일 구성 및 학습 내용
@@ -94,6 +121,33 @@ throw new RuntimeException(); // Unchecked Exception (예외 처리 선택, 실�
 
 ---
 
+### 4. [Ex8_04.java](./src/Ex8_04.java) - 메서드에 예외 선언하기 (throws)
+
+- 메서드 선언부에 `throws Exception`을 지정해 발생한 예외를 직접 처리하지 않고 자신을 호출한 상위 메서드(`main`)로 넘겨서 처리하도록 책임을 위임하는 예제입니다.
+- 호출부인 `main` 메서드 내에서 `try-catch`문으로 위임받은 예외를 직접 수습하고 실행 흐름을 이어가도록 처리합니다.
+
+```java
+class Ex8_04 {
+    public static void main(String[] args) {
+        try {
+            File f = createFile("Test2.txt");
+        } catch (Exception e) {
+            System.out.println(e.getMessage() + "재입력해 주세요.");
+        }
+    }
+
+    static File createFile(String fileName) throws Exception {
+        if (fileName == null || fileName.equals(""))
+            throw new Exception("파일이름 유효하지 않습니다.");
+        File f = new File(fileName);
+        f.createNewFile();
+        return f;
+    }
+}
+```
+
+---
+
 ## 핵심 비교 요약
 
 | 개념 | 주요 특징 및 주의사항 | 예시 / 예외 종류 |
@@ -106,3 +160,7 @@ throw new RuntimeException(); // Unchecked Exception (예외 처리 선택, 실�
 | **Unchecked 예외** | `RuntimeException` 계층군. 예외 처리 선택 (컴파일러 미검사) | `NullPointerException`, `ArithmeticException` |
 | **`throw`** | 프로그래머가 고의로 예외를 발생시킬 때 사용 | `throw new RuntimeException();` |
 | **다중 catch** | 첫 번째 catch부터 차례대로 맞는지 검사하여 하나의 catch만 실행 | `catch(AE ae)` -> `catch(Exception e)` |
+| **`throws`** | 메서드 선언부에 작성하여 발생할 수 있는 예외를 호출부로 위임 | `void method() throws Exception` |
+| **사용자 정의 예외** | `Exception` 또는 `RuntimeException`을 상속받아 직접 정의하는 예외 | `class MyException extends RuntimeException` |
+| **연결된 예외** | 한 예외가 다른 예외를 발생시키도록 원인 예외를 등록(인과관계 체인) | `initCause(e)` / Checked를 Unchecked로 변환 시 유용 |
+
