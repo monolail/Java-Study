@@ -32,6 +32,26 @@
   - `Integer.parseInt(str)`, `Double.parseDouble(str)` 등을 이용해 원시 타입(Primitive)으로 변환합니다.
   - `Integer.valueOf(str)`, `Double.valueOf(str)`를 이용하면 기본형뿐만 아니라 객체(Wrapper 클래스)로도 자동 형변환되어 유연하게 대입할 수 있습니다.
 
+### 6. StringBuffer & StringBuilder 클래스
+- **공통점**:
+  - 지정된 크기의 버퍼(char 배열)를 내부에 가지며, 한번 생성하면 값을 변경할 수 없는 `String` 클래스와 달리 **내부 문자열 데이터의 자유로운 변경(수정/추가)이 가능**합니다.
+  - 문자열 결합 연산이 빈번하게 일어나는 구조에서 `String`에 비해 인스턴스 생성 및 가비지 컬렉션 부담이 크게 줄어듭니다.
+- **차이점 (동기화 여부)**:
+  - **`StringBuffer`**: 멀티스레드 환경에서 안전하도록 **동기화(Synchronization)** 처리가 되어 있어 Thread-safe합니다.
+  - **`StringBuilder`**: 동기화 처리를 배제하여 단일스레드 환경이나 멀티스레드 동기화가 불필요한 환경에서 **`StringBuffer`보다 빠른 속도와 우수한 성능**을 제공합니다 (두 클래스는 제공하는 기능과 API가 동일합니다).
+
+### 7. Wrapper 클래스
+- **정의**: 자바의 8가지 기본형(Primitive type) 변수를 객체로 다루어야 할 때(예: 컬렉션에 추가, 객체 참조 전달 등) 객체 형태로 감싸서 제공하는 클래스들입니다.
+- **매칭**: `boolean`->`Boolean`, `char`->`Character`, `int`->`Integer`, `double`->`Double` 등.
+- **오토박싱(Autoboxing) & 언박싱(Unboxing)**:
+  - **오토박싱**: 기본형 값을 자동으로 Wrapper 객체로 변환해주는 기법 (예: `Integer i = 100;`).
+  - **언박싱**: Wrapper 객체의 값을 자동으로 기본형으로 꺼내주는 기법 (예: `int val = i;`).
+  - 컴파일러가 바이트코드로 변환 시 형변환 메서드(`valueOf()`, `intValue()`)를 자동으로 작성해주므로 편리한 혼용 연산이 가능합니다.
+
+### 8. Number 클래스
+- **정의**: 숫자를 나타내는 래퍼 클래스들(`Byte`, `Short`, `Integer`, `Long`, `Float`, `Double`)과 매우 큰 수치 연산을 돕는 `BigInteger`, `BigDecimal` 등의 공통 조상이 되는 추상 클래스입니다.
+- **역할**: 객체 상태로 저장된 숫자들을 기본형으로 변환해주는 메서드들(`intValue()`, `longValue()`, `floatValue()`, `doubleValue()` 등)을 하위 클래스에서 반드시 구현하도록 추상화하여, 다형성 구조 속에서 유연한 기본형 자료형 변환을 지원합니다.
+
 ---
 
 ## 파일 구성 및 학습 내용
@@ -111,6 +131,40 @@ double sum = Integer.valueOf(strval) + Double.parseDouble("200.0"); // String ->
 
 ---
 
+### 5. [Ex9_05.java](./src/Ex9_05.java) - Math.round()와 Math.rint()의 반올림 비교
+
+- 소수점 첫째자리에서 반올림을 수행하는 `Math.round()`와 가장 가까운 짝수 정수(double)를 반환하는 `Math.rint()`의 반올림 기준 차이를 비교하는 예제입니다.
+
+```java
+double d1 = Math.round(d); // 1.5 -> 2, 2.5 -> 3 (정수형 변환 반올림)
+double d2 = Math.rint(d);  // 1.5 -> 2.0, 2.5 -> 2.0 (가장 가까운 짝수 실수)
+```
+
+---
+
+### 6. [Ex9_06.java](./src/Ex9_06.java) - 다양한 진법 문자열의 정수 변환
+
+- `Integer.parseInt(String s, int radix)` 메서드를 활용하여 2진법, 16진법 등 10진법이 아닌 다른 진법 형태로 표현된 문자열 숫자를 10진수 정수로 정확하게 변환해주는 예제입니다.
+
+```java
+int i2 = Integer.parseInt("100", 2);   // "100"을 2진수로 파싱 -> 10진수 4
+int i16 = Integer.parseInt("FF", 16);  // "FF"를 16진수로 파싱 -> 10진수 255
+```
+
+---
+
+### 7. [Ex9_07.java](./src/Ex9_07.java) - 오토박싱(Autoboxing)과 언박싱(Unboxing)
+
+- `ArrayList<Integer>`를 사용하면서 기본형 데이터(`100`)가 자동으로 `Integer` 객체로 포장되어 추가되는 오토박싱 현상과, 리스트 내부 객체가 명시적 메서드 호출(`intValue()`) 없이 자동으로 기본형 변수에 대입되는 언박싱 현상을 학습합니다.
+
+```java
+ArrayList<Integer> list = new ArrayList<Integer>();
+list.add(100);       // 오토박싱: list.add(new Integer(100))으로 컴파일러가 자동 변환
+Integer i = list.get(0); // 언박싱 지원 대입
+```
+
+---
+
 ## 핵심 비교 요약
 
 | 개념 | 주요 특징 및 주의사항 | 예시 / 메서드 |
@@ -124,3 +178,9 @@ double sum = Integer.valueOf(strval) + Double.parseDouble("200.0"); // String ->
 | **`instanceof`** | equals 구현 시 매개변수 객체가 비교 가능한 타입인지 안전하게 검증 | `obj instanceof Card` |
 | **기본형 -> String** | 문자열 합치기(`+ ""`) 또는 `String.valueOf()` 사용 | `100 + ""` |
 | **String -> 기본형** | Wrapper 클래스의 파싱(parse) 및 ValueOf 메서드 활용 | `Integer.parseInt("100")` |
+| **StringBuffer** | 내부 버퍼 변경 가능(Mutable). 동기화 지원(Thread-Safe)으로 멀티스레드 적합 | `StringBuffer sb = new StringBuffer();` |
+| **StringBuilder** | 내부 버퍼 변경 가능(Mutable). 동기화 미지원으로 단일스레드 고성능 제공 | `StringBuilder sb = new StringBuilder();` |
+| **Wrapper 클래스** | 8가지 기본형을 객체로 다루기 위해 포장하는 클래스군 | `Integer`, `Double`, `Character` 등 |
+| **Number 클래스** | 숫자형 래퍼 클래스 및 대형 수치 연산 클래스들의 공통 추상 조상 | `Byte`, `Integer`, `BigInteger` 등의 조상 |
+| **오토박싱/언박싱** | 기본형 값과 래퍼 클래스 객체 간의 자동 형변환 지원 | `list.add(100)` (Autoboxing) |
+
