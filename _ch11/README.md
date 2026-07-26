@@ -26,6 +26,25 @@
 > [!NOTE]
 > `List`와 `Set`은 공통된 조상인 `Collection` 인터페이스를 상속받아 유기적인 처리가 가능하지만, `Map`은 키와 값을 쌍으로 관리하는 독자적인 구조이므로 `Collection` 인터페이스를 상속받지 않고 독립적으로 정의되어 있습니다.
 
+### 4. 스택과 큐 (Stack & Queue)
+- **스택 (Stack)**:
+  - **LIFO (Last-In First-Out) 구조**: 마지막에 삽입된 데이터가 가장 먼저 제거되는 구조입니다.
+  - 한쪽 끝에서만 데이터를 넣고 뺄 수 있습니다.
+  - **활용 예시**: 수식 계산, 수식 괄호 검사, 워드프로세서의 undo/redo, 웹브라우저의 뒤로가기/앞으로가기.
+  - **자바 구현**: `Stack` 클래스를 직접 생성해 사용합니다 (`push()`, `pop()`, `peek()`).
+- **큐 (Queue)**:
+  - **FIFO (First-In First-Out) 구조**: 가장 처음에 삽입된 데이터가 가장 먼저 제거되는 구조입니다.
+  - 한쪽 끝에서는 삽입만, 다른 쪽 끝에서는 추출만 일어납니다.
+  - **활용 예시**: 인쇄 대기열(스풀), 최근 사용 문서 이력(History), 프로세스 처리 버퍼.
+  - **자바 구현**: `Queue` 인터페이스만 존재하므로, 주로 **`LinkedList` 클래스를 인터페이스 구현체로 생성**하여 사용합니다 (`offer()`, `poll()`, `peek()`).
+
+### 5. 이터레이터 (Iterator)
+- **정의**: 컬렉션 프레임워크에 저장된 요소를 읽어오는 방법을 표준화한 인터페이스입니다.
+- **필요성**: `List` 계열은 인덱스가 있어 일반 `for`문 접근이 수월하지만, `Set` 계열은 순서가 없으므로 인덱스 접근이 불가능합니다. 이를 해결하고자 컬렉션의 구조와 상관없이 일관성 있는 순회를 보장하기 위해 도입되었습니다.
+- **주요 메서드**:
+  - `hasNext()`: 다음 요소가 존재하면 `true`, 없으면 `false` 반환.
+  - `next()`: 다음 요소를 반환하고 포인터를 다음 위치로 이동.
+
 ---
 
 ## 🚀 ArrayList vs LinkedList 성능 비교 및 분석
@@ -76,4 +95,66 @@ list1.add(2);
 Collections.sort(list1); // 컬렉션 정렬 유틸
 System.out.println(list1.indexOf(3)); // 인덱스 탐색 (없으면 -1)
 list1.remove(4); // 인덱스 4에 해당하는 요소 삭제
+```
+
+---
+
+### 2. [Ex11_02.java](./src/Ex11_02.java) - Stack과 Queue의 기본 동작 비교
+- Stack과 Queue의 데이터 입출력 방식을 비교 실습합니다. Stack은 LIFO 구조(`push()`, `pop()`), Queue는 FIFO 구조(`offer()`, `poll()`)로 데이터를 처리함을 눈으로 확인합니다.
+
+```java
+Stack st = new Stack();
+Queue qe = new LinkedList(); // Queue는 인터페이스이므로 LinkedList 구현체 활용
+
+st.push("0");
+qe.offer("0");
+
+st.pop();
+qe.poll();
+```
+
+---
+
+### 3. [Ex11_03.java](./src/Ex11_03.java) - Stack 활용: 수식 괄호 쌍 검사
+- 수식 문자열 `((3+5*8-2))` 내의 괄호 짝이 정확히 부합하는지 Stack을 이용해 파싱 및 검사하는 실습입니다.
+- 여는 괄호 `(`를 만나면 Stack에 push하고, 닫는 괄호 `)`를 만나면 pop하여 짝을 맞추며, 최종적으로 Stack이 비어있는지 확인해 괄호 일치 여부를 판별합니다.
+
+```java
+Stack st = new Stack();
+if (ch == '(') {
+    st.push(ch + "");
+} else if (ch == ')') {
+    st.pop();
+}
+```
+
+---
+
+### 4. [Ex11_04.java](./src/Ex11_04.java) - Queue 활용: 최근 명령어 내역 저장 (History)
+- 고정 크기(`MAX_SIZE = 5`)의 큐 구조를 이용해 사용자 입력 커맨드 이력을 최대 5개까지 보관하는 History 큐를 구현합니다.
+- 새로운 명령어가 추가될 때 기존 버퍼 크기를 초과하면 가장 오래된 요소를 큐에서 삭제(`qe.remove()`)하여 최근 5개의 기록만 유지하는 FIFO 구조를 적용합니다.
+
+```java
+static Queue qe = new LinkedList();
+static final int MAX_SIZE = 5;
+
+// 새 명령어 저장 로직
+qe.offer(input);
+if (qe.size() > MAX_SIZE) {
+    qe.remove(); // 가장 오래된 맨 앞의 요소 삭제
+}
+```
+
+---
+
+### 5. [Ex11_05.java](./src/Ex11_05.java) - Iterator 반복자를 통한 컬렉션 요소 표준 조회
+- 컬렉션에 저장된 요소를 조회하기 위해 `iterator()`를 호출하여 반복자(`Iterator`) 객체를 획득하고 순회하는 실습을 진행합니다.
+- 인덱스 기반의 `get(i)` 루프 방식과 비교하며, Set 등 인덱스가 없는 컬렉션에서도 일관된 순회 코드를 제공하는 표준 이터레이터 기법의 장점을 학습합니다.
+
+```java
+Iterator it = list.iterator();
+while(it.hasNext()) {
+    Object obj = it.next();
+    System.out.println(obj);
+}
 ```

@@ -29,6 +29,6 @@ public class Ex11_01 {
 
         // remove삭제
         list1.remove(4); // 값이 아닌 인덱스의 객체가 삭제
-        System.out.println(list1); 
+        System.out.println(list1); // 인덱스 4인 값 5가 삭제.
     }
 }
