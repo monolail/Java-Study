@@ -45,6 +45,26 @@
   - `hasNext()`: 다음 요소가 존재하면 `true`, 없으면 `false` 반환.
   - `next()`: 다음 요소를 반환하고 포인터를 다음 위치로 이동.
 
+### 6. Arrays 클래스
+- **정의**: 배열을 다루기 위한 유용한 정적(static) 메서드들을 제공하는 유틸리티 클래스입니다.
+- **주요 기능**:
+  - **배열 출력**: `toString()` (1차원 배열), `deepToString()` (다차원 배열).
+  - **배열 복사**: `copyOf(arr, length)` (배열의 처음부터 지정된 길이만큼 복사), `copyOfRange(arr, from, to)` (지정된 범위의 배열을 복사).
+  - **배열 채우기**: `fill(arr, val)` (배열의 모든 요소를 특정 값으로 채움), `setAll(arr, generator)` (람다식이나 함수형 인터페이스를 활용해 임의의 규칙으로 배열을 채움).
+  - **배열 정렬 및 검색**: `sort(arr)` (배열 요소를 정렬), `binarySearch(arr, key)` (이진 검색을 수행하여 값의 위치를 반환. 단, 사용 전 **반드시 배열이 정렬**되어 있어야 함).
+
+### 7. Comparator와 Comparable
+객체 정렬(Sorting) 시 어떤 기준으로 데이터를 배치할 것인지 그 정렬 기준을 정의하는 인터페이스들입니다.
+- **Comparable**:
+  - 패키지: `java.lang`
+  - 특징: 클래스 내부에 정의하여 객체의 **기본 정렬 기준(Natural Order)**을 정의하는 데 사용됩니다.
+  - 구현 메서드: `compareTo(Object o)`를 오버라이딩하여 자신(`this`)과 매개변수 객체(`o`)를 비교해 음수, 0, 양수를 반환합니다.
+  - 예시: `String` 클래스는 사전 순으로, `Integer` 클래스는 오름차순으로 이미 `Comparable`이 기본 구현되어 있습니다.
+- **Comparator**:
+  - 패키지: `java.util`
+  - 특징: 기본 정렬 기준 외에 **전혀 다른 기준(예: 내림차순, 문자열 길이순 등)으로 정렬**하고 싶을 때 정의하는 비교기 객체입니다.
+  - 구현 메서드: `compare(Object o1, Object o2)`를 오버라이딩하여 두 매개변수를 비교하여 결과를 반환합니다.
+
 ---
 
 ## 🚀 ArrayList vs LinkedList 성능 비교 및 분석
@@ -157,4 +177,28 @@ while(it.hasNext()) {
     Object obj = it.next();
     System.out.println(obj);
 }
+```
+
+---
+
+### 6. [Ex11_06.java](./src/Ex11_06.java) - Arrays 클래스 활용법
+- `Arrays.toString()` 및 `Arrays.deepToString()`을 사용해 1차원/2차원 배열 요소를 출력하고, `copyOf()`, `copyOfRange()`를 이용해 배열을 슬라이싱 및 복사하는 실습을 진행합니다.
+- `Arrays.fill()` 및 `Arrays.setAll()`을 사용해 정해진 값이나 무작위 난수(람다 활용)로 배열을 채우는 기법을 배웁니다.
+
+```java
+int[] arr = {0, 1, 2, 3, 4};
+int[] arr2 = Arrays.copyOf(arr, arr.length);
+int[] arr5 = Arrays.copyOfRange(arr, 2, 4); // index 2~3 복사
+Arrays.fill(arr7, 9); // 9로 채우기
+Arrays.setAll(arr7, i -> (int)(Math.random() * 6) + 1); // 람다식 난수 채우기
+```
+
+---
+
+### 7. [Ex11_07.java](./src/Ex11_07.java) - Comparable 정렬 구현과 Arrays.sort()
+- `Arrays.sort(strArr)` 메서드를 이용해 문자열 배열을 정렬하는 예제입니다. `String` 클래스가 내부적으로 `Comparable` 인터페이스를 구현하고 있어 별도의 정렬 조건을 주지 않아도 알파벳 사전순(오름차순)으로 자동 정렬되는 원리를 학습합니다.
+
+```java
+String[] strArr = {"cat", "dog", "lion", "monkey"};
+Arrays.sort(strArr); // String 객체 내부의 Comparable(compareTo()) 기준 오름차순 정렬
 ```
