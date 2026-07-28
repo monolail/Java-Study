@@ -65,6 +65,23 @@
   - 특징: 기본 정렬 기준 외에 **전혀 다른 기준(예: 내림차순, 문자열 길이순 등)으로 정렬**하고 싶을 때 정의하는 비교기 객체입니다.
   - 구현 메서드: `compare(Object o1, Object o2)`를 오버라이딩하여 두 매개변수를 비교하여 결과를 반환합니다.
 
+### 8. HashSet
+- **정의**: `Set` 인터페이스를 구현한 가장 대표적인 컬렉션 클래스입니다.
+- **특징**:
+  - **중복 요소를 허용하지 않습니다**: 동일한 값을 여러 번 넣어도 최종적으로 단 하나만 유지됩니다.
+  - **순서를 유지하지 않습니다**: 저장 순서가 보장되지 않으며, 해시 함수 알고리즘에 의해 내부 정렬이 수행됩니다. 만일 순서 유지가 필요하다면 `LinkedHashSet` 클래스를 활용해야 합니다.
+- **동작 원리**: 데이터를 삽입할 때 `add(Object o)`는 새로 추가할 요소의 해시값과 내부 값을 조회하여 중복 여부를 판단하고, 중복이 없을 때만 요소를 추가하여 컬렉션 무결성을 보호합니다.
+
+### 9. equals()와 hashCode() 오버라이딩의 중요성
+- **중복 판단 메커니즘**:
+  - `HashSet`이 요소를 추가할 때 객체의 동등성 검사는 두 단계로 나뉩니다:
+    1. 추가하려는 객체의 **`hashCode()`**를 호출하여 기존에 저장된 객체들의 해시코드와 일치하는 것이 있는지 비교합니다. (성능 최적화를 위한 1차 필터링)
+    2. 해시코드가 일치하는 객체가 발견되면, 2차로 **`equals()`** 메서드를 실행해 실제 필드 데이터 값을 정밀 대조합니다.
+  - 이 두 검사를 모두 통과해 서로 다르다고 판정되어야 비로소 중복이 아닌 새로운 객체로 관리됩니다.
+- **오버라이딩 규칙**:
+  - 사용자 정의 클래스(예: `Person`) 인스턴스를 HashSet에 중복 없이 담으려면 **`equals()`와 `hashCode()`를 반드시 목적에 맞게 재정의**해주어야 합니다.
+  - 재정의하지 않으면 Object 클래스의 기본 equals(주소값 비교)와 hashCode(객체 고유 메모리 주소 기반 해싱)가 적용되어, 인스턴스 멤버 내용이 완벽하게 일치해도 서로 다른 객체로 판정되어 중복 삽입되는 논리 오류를 야기합니다.
+
 ---
 
 ## 🚀 ArrayList vs LinkedList 성능 비교 및 분석
@@ -201,4 +218,46 @@ Arrays.setAll(arr7, i -> (int)(Math.random() * 6) + 1); // 람다식 난수 채�
 ```java
 String[] strArr = {"cat", "dog", "lion", "monkey"};
 Arrays.sort(strArr); // String 객체 내부의 Comparable(compareTo()) 기준 오름차순 정렬
+```
+
+---
+
+### 8. [Ex11_08.java](./src/Ex11_08.java) - HashSet의 중복 배제 실습
+- 중복된 값들이 섞여 있는 배열 객체들을 `HashSet`에 추가하며, 이미 등록된 인스턴스가 존재할 경우 `add()` 메서드가 `false`를 리턴하며 중복 저장을 차단하는 메커니즘을 테스트합니다.
+- `String` 타입 `"1"`과 `Integer` 타입 `1`은 해시코드 및 동등성 기준이 완전히 다른 서로 다른 객체이므로 둘 다 성공적으로 저장되는 타입 구분 특성도 확인합니다.
+
+```java
+Object[] objARR = {"1", new Integer(1), "2", "2", "3", "3"};
+Set set = new HashSet();
+for(int i=0; i<objARR.length; i++) {
+    set.add(objARR[i]); // "2", "3"의 중복 추가 시도 시 false 리턴 및 추가 안 됨
+}
+```
+
+---
+
+### 9. [Ex11_09.java](./src/Ex11_09.java) - 커스텀 객체의 equals()와 hashCode() 오버라이딩
+- `HashSet`에 커스텀한 객체(`Person` 클래스 인스턴스)를 담아 중복을 정확히 제어하기 위해, `Person` 클래스 내에 멤버 필드(`name`, `age`)의 내용을 대조하는 `equals()`와 멤버들을 해싱하는 `hashCode()` 메서드를 직접 오버라이딩하는 실습 예제입니다.
+
+```java
+class Person {
+    String name;
+    int age;
+    
+    // name과 age가 같으면 같은 객체로 비교되도록 구현
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj instanceof Person) {
+            Person p = (Person) obj;
+            return age == p.age && Objects.equals(name, p.name);
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, age);
+    }
+}
 ```
