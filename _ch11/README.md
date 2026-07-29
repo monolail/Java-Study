@@ -82,6 +82,19 @@
   - 사용자 정의 클래스(예: `Person`) 인스턴스를 HashSet에 중복 없이 담으려면 **`equals()`와 `hashCode()`를 반드시 목적에 맞게 재정의**해주어야 합니다.
   - 재정의하지 않으면 Object 클래스의 기본 equals(주소값 비교)와 hashCode(객체 고유 메모리 주소 기반 해싱)가 적용되어, 인스턴스 멤버 내용이 완벽하게 일치해도 서로 다른 객체로 판정되어 중복 삽입되는 논리 오류를 야기합니다.
 
+### 10. TreeSet
+- **정의**: `Set` 인터페이스를 구현한 컬렉션 클래스로, 내부적으로 **이진 탐색 트리(Binary Search Tree)** 구조를 사용하여 데이터를 관리합니다.
+- **특징**:
+  - **오름차순 정렬 저장**: 데이터가 저장될 때 크기를 비교하며 트리 구조로 정렬되므로, 항상 요소들이 정렬된 상태를 유지합니다.
+  - **정렬 기준 필수성**: `TreeSet`은 추가할 객체들의 대소관계를 비교해가며 트리를 빌드합니다. 따라서 저장하려는 객체의 클래스가 **`Comparable` 인터페이스(compareTo 메서드)를 상속 구현**하고 있거나, `TreeSet` 생성자에 **비교 기준이 명시된 `Comparator` 구현체**를 넘겨주어야 합니다. 만약 정렬 기준이 존재하지 않는 객체를 대입하면 `ClassCastException` 예외가 발생합니다.
+
+### 11. TreeSet의 범위 검색 기능 (Range Search)
+- 이진 탐색 트리는 왼쪽 노드에 자신보다 작은 값, 오른쪽 노드에 큰 값을 연결하는 구조를 띠고 있어 특정 데이터 범위의 검색 속도가 매우 빠릅니다.
+- **주요 범위 검색 API**:
+  - **`subSet(from, to)`**: 지정된 범위 `from` (포함)에서 `to` (불포함) 사이의 데이터 집합을 뷰 형태로 반환합니다.
+  - **`headSet(to)`**: 지정된 경계값 `to`보다 작은(strictly less) 모든 데이터 집합을 반환합니다.
+  - **`tailSet(from)`**: 지정된 경계값 `from`보다 크거나 같은(greater than or equal) 모든 데이터 집합을 반환합니다.
+
 ---
 
 ## 🚀 ArrayList vs LinkedList 성능 비교 및 분석
@@ -260,4 +273,31 @@ class Person {
         return Objects.hash(name, age);
     }
 }
+```
+
+---
+
+### 10. [Ex11_10.java](./src/Ex11_10.java) - TreeSet의 비교기(Comparator) 지정
+- 정렬 기준이 없는 클래스(`Test`)의 인스턴스를 `TreeSet`에 직접 추가하면 크기 비교 기준이 없어 런타임 에러(`ClassCastException`)가 유발됩니다.
+- 이를 차단하기 위해 `TreeSet` 생성 시 인자로 커스텀한 비교기 구현체(`new TestComp()`)를 주입하여 정렬 요건을 충족시키는 방법을 실습합니다.
+
+```java
+// Test 클래스는 Comparable 정렬 기준이 없지만, TestComp 비교기를 넘겨 정렬을 처리함
+Set set = new TreeSet(new TestComp());
+set.add(new Test());
+```
+
+---
+
+### 11. [Ex11_11.java](./src/Ex11_11.java) - TreeSet의 범위 검색 메서드 활용
+- 이진 탐색 트리 구조를 지닌 `TreeSet`을 활용하여 특정 값 범위를 초고속으로 조회하는 기능들을 실습합니다.
+- `headSet(50)` (50보다 작은 값들), `tailSet(50)` (50보다 크거나 같은 값들), `subSet(40, 80)` (40 이상 80 미만인 값들) 메서드를 테스트합니다.
+
+```java
+TreeSet set = new TreeSet();
+// [10, 35, 45, 50, 65, 80, 95, 100] 정렬 자동 저장
+
+System.out.println(set.headSet(50)); // [10, 35, 45]
+System.out.println(set.tailSet(50)); // [50, 65, 80, 95, 100]
+System.out.println(set.subSet(40, 80)); // [45, 50, 65]
 ```
