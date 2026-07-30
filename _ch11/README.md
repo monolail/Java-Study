@@ -95,6 +95,19 @@
   - **`headSet(to)`**: 지정된 경계값 `to`보다 작은(strictly less) 모든 데이터 집합을 반환합니다.
   - **`tailSet(from)`**: 지정된 경계값 `from`보다 크거나 같은(greater than or equal) 모든 데이터 집합을 반환합니다.
 
+### 12. HashMap
+- **정의**: `Map` 인터페이스를 구현한 가장 대표적인 컬렉션 클래스스로, **해싱(Hashing)** 기법을 사용하여 많은 양의 데이터를 검색할 때 최상의 검색 성능을 보여줍니다.
+- **특징**:
+  - **키-값(Key-Value) 매핑**: 데이터를 키와 값의 쌍인 Entry 객체 형태로 묶어 관리합니다.
+  - **키(Key) 중복 불가**: 키는 지도를 나타내는 고유 인덱스이므로 중복을 허용하지 않습니다. 동일한 키로 `put()`을 실행하면 기존 키에 연결되어 있던 이전 값은 지워지고 **새로운 값으로 덮어씌워집니다**.
+  - **값(Value) 중복 허용**: 서로 다른 키가 동일한 값을 매핑하는 것은 허용됩니다 (예: 다른 아이디가 동일한 비밀번호를 가짐).
+
+### 13. HashMap의 내부 데이터 반환 및 순회 메서드 (Map Views)
+`Map` 인터페이스는 `Collection` 인터페이스와 상속 관계가 없어 직접 `iterator()`를 제공하지 않습니다. 대신 내부 데이터를 여러 집합 형태의 뷰(View)로 변환해주는 API들을 제공합니다.
+- **`keySet()`**: 맵의 모든 키(Key)들만 모아서 `Set` 타입으로 반환합니다.
+- **`values()`**: 맵의 모든 값(Value)들만 모아서 `Collection` 타입으로 반환합니다. (값은 중복이 허용되므로 Set이 아닌 Collection 타입입니다.)
+- **`entrySet()`**: 키와 값의 쌍을 관리하는 내부 인터페이스 `Map.Entry` 인스턴스들의 집합을 `Set` 타입으로 반환합니다. 이 뷰를 획득하면 키와 값을 동시에 다루며 빠르게 루프를 돌 수 있습니다.
+
 ---
 
 ## 🚀 ArrayList vs LinkedList 성능 비교 및 분석
@@ -300,4 +313,38 @@ TreeSet set = new TreeSet();
 System.out.println(set.headSet(50)); // [10, 35, 45]
 System.out.println(set.tailSet(50)); // [50, 65, 80, 95, 100]
 System.out.println(set.subSet(40, 80)); // [45, 50, 65]
+```
+
+---
+
+### 12. [Ex11_12.java](./src/Ex11_12.java) - HashMap을 활용한 로그인 정보 조작
+- `HashMap`을 생성해 아이디(Key)와 패스워드(Value)를 관리하며 맵의 고유 특성을 확인하는 예제입니다.
+- 중복된 아이디 키(`"asdf"`)로 값을 입력 시 최종 입력 값으로 대체되는 동작 원리를 확인하고, `containsKey()`, `get()` 메서드를 조합해 계정 로그인 성공 여부를 검증하는 로직을 실습합니다.
+
+```java
+HashMap map = new HashMap();
+map.put("MYID", "1234");
+map.put("asdf", "1111");
+map.put("asdf", "1234"); // key "asdf"의 값이 "1234"로 최종 덮어씌워짐
+
+if (!map.containsKey(id)) { ... } // 키 존재여부 확인
+if (!(map.get(id)).equals(password)) { ... } // 값 꺼내서 비교
+```
+
+---
+
+### 13. [Ex11_13.java](./src/Ex11_13.java) - HashMap 데이터 일괄 조회와 가공 (entrySet & values)
+- `HashMap`에서 데이터 세트의 총점, 평균, 최대/최소값을 구하기 위해 데이터의 부분 집합인 뷰(View)를 획득하는 실습 예제입니다.
+- 요소를 일괄 조회하기 위한 `entrySet()`의 사용법과, 전체 수치 값들만 모아 추출하는 `values()` 메서드를 `Collections` 도구(`max()`, `min()`)와 혼용하는 기법을 실습합니다.
+
+```java
+HashMap map = new HashMap();
+// ... 성적 저장
+
+Set set = map.entrySet(); // Map.Entry 쌍들의 Set 집합 뷰 획득
+Collection values = map.values(); // 값들만 모아둔 컬렉션 뷰 획득
+
+// Collections 연산 유틸 활용
+System.out.println("최고점 : " + Collections.max(values));
+System.out.println("최저점 : " + Collections.min(values));
 ```
