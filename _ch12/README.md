@@ -34,6 +34,15 @@
     ArrayList<Tv> list = new ArrayList<>(); // OK (타입 추론)
     ```
 
+### 4. 제네릭 Iterator (Iterator<E>)
+- `Iterator` 인터페이스 또한 제네릭스를 지원합니다. `Iterator<E>` 형식으로 반환받으면, `next()` 메서드가 꺼내는 객체의 반환 타입이 지정된 타입 `E`로 확정됩니다.
+- 이로 인해 요소를 호출할 때마다 매번 명시적으로 형변환(Casting) 연산을 수동 작성해 주어야 했던 번거로움과 오류 가능성이 일시에 해소됩니다.
+
+### 5. 다중 타입 매개변수
+- `HashMap`처럼 키(Key)와 값(Value)과 같이 여러 개의 타입 인자를 대입받는 클래스는 선언부에 쉼표(`,`)를 구분자로 여러 개의 타입 변수를 가집니다.
+- 예: `class HashMap<K, V> { ... }`
+- 실제 객체를 선언하여 다룰 때 키와 값의 타입을 각각 대입해 유연하고도 안전한 해시맵 구조를 정적으로 바인딩하여 운용할 수 있습니다.
+
 ---
 
 ## 📂 파일 구성 및 학습 내용
@@ -61,4 +70,25 @@ list.add(new Tv());
 // list.add(new Audio()); // 컴파일 에러: Tv 타입으로 제한됨
 
 Tv t = list.get(0); // 캐스팅 캐스팅 연산 없이 데이터를 바로 꺼내어 안전하게 사용
+```
+
+---
+
+### 3. [Ex12_03.java](./src/Ex12_03.java) - 제네릭 Iterator와 HashMap 활용
+- 제네릭 `Iterator<Student>`를 설정하여 반복 조회를 시도함으로써, `next()` 호출 시 강제 형변환 연산 없이 컬렉션 요소의 속성(`Student.name`)에 바로 접근하는 구조를 배웁니다.
+- 복수의 제네릭 타입 변수를 지정하여 선언하는 `HashMap<String, Student>` 컬렉션을 선언하고, 데이터를 주입하는 실습 예제입니다.
+
+```java
+ArrayList<Student> list = new ArrayList<Student>();
+// ... 데이터 추가
+
+Iterator<Student> it = list.iterator(); // 제네릭 Iterator 적용
+while(it.hasNext()) {
+    Student s = it.next(); // 형변환 연산 배제 가능
+    System.out.println(s.name);
+}
+
+// HashMap에 2개의 타입 매개변수 바인딩
+HashMap<String, Student> map = new HashMap<String, Student>();
+map.put("1-1", new Student("홍길동", 1, 1, 90, 80, 70));
 ```
