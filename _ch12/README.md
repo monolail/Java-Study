@@ -43,6 +43,34 @@
 - 예: `class HashMap<K, V> { ... }`
 - 실제 객체를 선언하여 다룰 때 키와 값의 타입을 각각 대입해 유연하고도 안전한 해시맵 구조를 정적으로 바인딩하여 운용할 수 있습니다.
 
+### 6. 제한된 제네릭 클래스 (Bounded Generic Class)
+- 제네릭스 타입 변수에 대입할 수 있는 타입을 제한하여 안전한 코드를 설계하는 문법입니다.
+- **`extends` 키워드 지정**: `<T extends Fruit>` 형태로 선언하면, `T`는 `Fruit`를 포함하여 **`Fruit`의 자손 클래스들만 대입** 가능하게 됩니다.
+- 만일 인터페이스를 구현한 클래스로 제한하려 할 때도 `implements` 대신 동일하게 `extends`를 사용하며, 여러 제한 조건을 연결할 때는 `&` 기호를 사용합니다 (예: `<T extends Fruit & Eatable>`).
+
+### 7. 와일드카드 (Wildcard `?`)
+제네릭 타입 매개변수의 유연성을 늘리기 위해 설계된 미확정 기호(`?`)입니다.
+- **`<? extends T>`**: 와일드카드의 **상한 제한**. `T`와 그 자손들만 대입 가능합니다.
+- **`<? super T>`**: 와일드카드의 **하한 제한**. `T`와 그 조상들만 대입 가능합니다.
+- **`<?>`**: 제한 없음. `<? extends Object>` 와 동일하여 모든 타입이 매핑될 수 있습니다.
+- 메서드 선언부에 와일드카드를 적용하면 매개변수가 다른 다양한 제네릭스 객체들을 일괄적으로 수용할 수 있게 되어 코드의 재사용성이 획기적으로 상승합니다.
+
+### 8. 제네릭 타입의 형변환 (Generic Casting Rules)
+- **제네릭 타입과 원시 타입 간**: 형변환이 가능하나 안전성 경고(Warning)가 발생합니다. (예: `Box` <-> `Box<String>`).
+- **서로 다른 제네릭 타입 간**: 타입 매개변수가 다를 경우 조상-자손 관계가 성립하더라도 직접적인 형변환은 **불가능**합니다 (예: `Box<String>` <-> `Box<Integer>`, `Fruitbox<Fruit>` <-> `Fruitbox<Apple>` 캐스팅 불가).
+- **와일드카드 개입 시**: 와일드카드 타입으로의 형변환(업캐스팅)은 언제나 가능합니다 (예: `Fruitbox<Apple>` -> `Fruitbox<? extends Fruit>`). 이를 매개체 삼아 서로 다른 제네릭 타입 간의 우회 형변환도 처리가 가능합니다.
+
+### 9. 열거형 (Enum)
+- 서로 연관된 상수를 간결하고 강력하게 정의하기 위해 JDK 1.5에 도입된 특별한 자료형입니다.
+- **특징**:
+  - **타입 안전성(Typesafe)**: 단순 값의 대조뿐 아니라 실제 타입 자체를 비교하므로, 정수형 상수가 지닌 값 매핑 오류 등을 사전에 차단합니다.
+  - **값 비교**: 열거형 상수는 물리적으로 단 하나만 생성되는 인스턴스 형태이므로 `==` 연산자로 빠르게 동등성을 비교할 수 있습니다.
+- **주요 기본 API**:
+  - `name()`: 열거형 상수의 이름을 문자열로 반환.
+  - `ordinal()`: 열거형 상수가 정의된 순서(0부터 시작하는 인덱스)를 반환.
+  - `values()`: 정의된 모든 상수를 배열 형태로 반환.
+  - `valueOf(String name)`: 지정된 이름의 열거형 상수 객체를 탐색해 반환.
+
 ---
 
 ## 📂 파일 구성 및 학습 내용
@@ -91,4 +119,41 @@ while(it.hasNext()) {
 // HashMap에 2개의 타입 매개변수 바인딩
 HashMap<String, Student> map = new HashMap<String, Student>();
 map.put("1-1", new Student("홍길동", 1, 1, 90, 80, 70));
+```
+
+---
+
+### 4. [Ex12_04.java](./src/Ex12_04.java) - Bounded Type 제네릭 클래스와 와일드카드
+- `<T extends Fruit>`로 타입 파라미터 경계를 짓는 Bounded Generic 클래스 `Fruitbox`를 설계합니다.
+- `makeJuice(Fruitbox<? extends Fruit> box)` 와 같이 상한 제한 와일드카드(`? extends Fruit`)를 매개변수 타입으로 채택해, 자손 타입을 지닌 다채로운 제네릭 상자들을 유연하고도 안전하게 쥬서기로 인입시키는 메커니즘을 테스트합니다.
+
+```java
+class Fruitbox<T extends Fruit> extends Box<T> {}
+
+// Juicer
+static Juice makeJuice(Fruitbox<? extends Fruit> box) { ... }
+```
+
+---
+
+### 5. [Ex12_05.java](./src/Ex12_05.java) - 제네릭 타입 캐스팅 규칙
+- 제네릭 타입 간 형변환 한계를 확인하는 예제입니다. `Box<String>`과 `Box<Integer>` 간의 불가능한 다이렉트 캐스팅을 경험하고, 와일드카드를 포함한 제네릭 타입(`Fruitbox<? extends Fruit>`)이 일종의 공통 슈퍼타입 역할을 하여 업캐스팅 캐스팅 가교 역할을 수행하는 규칙을 검증합니다.
+
+```java
+Fruitbox<? extends Fruit> fruitBox = new Fruitbox<Fruit>(); // OK
+Fruitbox<? extends Apple> appleBox = new Fruitbox<Apple>(); // OK
+```
+
+---
+
+### 6. [Ex12_06.java](./src/Ex12_06.java) - 열거형 Enum 기초 활용
+- 동서남북 방향을 상징하는 `enum Direction { EAST, WEST, SOUTH, NORTH }` 을 선언하여 사용합니다.
+- 열거형 상수에 대한 비교 연산(`==` 및 `compareTo()`), `switch-case` 문 연계 매핑, 그리고 상수의 메타 정보를 조회하는 API(`name()`, `ordinal()`, `values()`, `valueOf()`) 들의 작동 방식을 실습합니다.
+
+```java
+Direction d1 = Direction.EAST;
+Direction d2 = Direction.valueOf("WEST");
+
+System.out.println(d1.compareTo(d2)); // ordinal 정수 위치 편차 비교
+Direction[] dArr = Direction.values(); // 전체 원소 뷰 반환
 ```
