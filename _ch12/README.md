@@ -71,6 +71,20 @@
   - `values()`: 정의된 모든 상수를 배열 형태로 반환.
   - `valueOf(String name)`: 지정된 이름의 열거형 상수 객체를 탐색해 반환.
 
+### 10. 애너테이션 (Annotation)
+- **정의**: 소스코드에 특수한 형식으로 정보를 기록하여, 프로그램 자체의 로직에는 영향을 주지 않으면서 **컴파일러나 빌드 툴, 런타임 프레임워크에게 중요한 메타데이터 설정 정보를 제공**하는 주석적 마크업 기법입니다.
+- **역할**:
+  - 컴파일러에게 유효성 검사 지시 (예: 잘못 설계된 오버라이딩 탐지).
+  - 소프트웨어 개발 툴 및 프레임워크를 위한 빌드/설정 정보 제공.
+  - 실행 시점(Runtime)에 리플렉션 기법을 이용해 메타 코드를 기반으로 동적으로 동작을 변경하도록 유도.
+
+### 11. 표준 애너테이션 (Standard Annotations)
+자바가 기본으로 내장하여 제공하는 대표적인 컴파일 지시용 애너테이션들입니다.
+- **`@Override`**: 메서드 앞에 붙여 해당 메서드가 조상 클래스의 메서드를 **올바르게 오버라이딩**했는지 컴파일러에게 검증을 요청합니다. 철자 실수나 매개변수 개수 오류 등으로 오버라이딩이 되지 않았을 경우 컴파일 에러를 즉각 발생시켜 실수를 완벽하게 제어합니다.
+- **`@Deprecated`**: 더 이상 사용되지 않거나 권장되지 않는 멤버(클래스, 필드, 메서드)에 선언합니다. 다른 클래스에서 이 멤버를 호출하려고 하면 컴파일러가 경고 메시지를 노출하여 하위 호환성을 깨지 않는 한도 내에서 새 메서드로의 전환을 독려합니다.
+- **`@FunctionalInterface`**: 해당 인터페이스가 단 하나의 추상 메서드만 정의하는 **함수형 인터페이스(Functional Interface)** 규격에 부합하는지 컴파일러에게 체크를 지시합니다. (추상 메서드가 없거나 2개 이상이면 즉시 빌드 에러를 유발합니다.)
+- **`@SuppressWarnings`**: 컴파일러가 노출하는 특정 경고 메시지가 화면에 찍히지 않도록 억제합니다. 애너테이션 괄호 안에 대상 경고 타입을 문자열 매개변수로 지정할 수 있습니다 (예: `@SuppressWarnings("deprecation")` - 감가 경고 비활성화).
+
 ---
 
 ## 📂 파일 구성 및 학습 내용
@@ -156,4 +170,31 @@ Direction d2 = Direction.valueOf("WEST");
 
 System.out.println(d1.compareTo(d2)); // ordinal 정수 위치 편차 비교
 Direction[] dArr = Direction.values(); // 전체 원소 뷰 반환
+```
+
+---
+
+### 7. [Ex12_07.java](./src/Ex12_07.java) - 자바 내장 표준 애너테이션 실습
+- 자바의 4가지 주요 표준 애너테이션의 검증 과정을 학습합니다.
+- 조상 클래스의 메서드를 재정의할 때 오버라이딩 유효성을 확인하는 `@Override`, 구버전 메서드 호출 시 컴파일 경고를 내는 `@Deprecated`, 컴파일러 지시 경고 메시지를 억제하는 `@SuppressWarnings`, 그리고 추상 메서드가 정확히 1개인 인터페이스 형태인지 체크하는 `@FunctionalInterface`를 테스트합니다.
+
+```java
+class Child extends Parent {
+    @Override // 오버라이딩 검증
+    @Deprecated // 더 이상 권장하지 않음 선언
+    void parentMethod() {}
+}
+
+@FunctionalInterface // 함수형 인터페이스 검증 (추상 메서드 단 1개 제한)
+interface Test {
+    void checkMethod();
+}
+
+class Ex12_07 {
+    @SuppressWarnings("deprecation") // Deprecated 경고 무시
+    public static void main(String[] args) {
+        Child c = new Child();
+        c.parentMethod();
+    }
+}
 ```
