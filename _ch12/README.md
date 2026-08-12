@@ -85,6 +85,37 @@
 - **`@FunctionalInterface`**: 해당 인터페이스가 단 하나의 추상 메서드만 정의하는 **함수형 인터페이스(Functional Interface)** 규격에 부합하는지 컴파일러에게 체크를 지시합니다. (추상 메서드가 없거나 2개 이상이면 즉시 빌드 에러를 유발합니다.)
 - **`@SuppressWarnings`**: 컴파일러가 노출하는 특정 경고 메시지가 화면에 찍히지 않도록 억제합니다. 애너테이션 괄호 안에 대상 경고 타입을 문자열 매개변수로 지정할 수 있습니다 (예: `@SuppressWarnings("deprecation")` - 감가 경고 비활성화).
 
+### 12. 메타 애너테이션 (Meta-Annotations)
+애너테이션에 붙는 애너테이션으로, 애너테이션을 정의할 때 적용 대상이나 유지 범위 등을 지정하기 위해 사용합니다.
+- **`@Target`**: 애너테이션이 적용될 수 있는 대상(위치)을 지정합니다.
+  - `ElementType.TYPE` (클래스, 인터페이스, 열거형)
+  - `ElementType.FIELD` (멤버 변수, 열거형 상수)
+  - `ElementType.METHOD` (메서드)
+  - `ElementType.PARAMETER` (매개변수)
+  - `ElementType.LOCAL_VARIABLE` (지역 변수)
+- **`@Retention`**: 애너테이션이 컴파일된 후에도 소스 내에서 유지되는 범위(기간)를 정의합니다.
+  - `RetentionPolicy.SOURCE`: 소스 파일에만 존재하고, 컴파일 시 클래스 파일에서 제거됩니다 (예: `@Override`).
+  - `RetentionPolicy.CLASS`: 클래스 파일에는 포함되지만, 실행 시(JVM 로드 시) 메모리에 올라가지 않습니다 (디폴트 범위).
+  - `RetentionPolicy.RUNTIME`: 클래스 파일에 기록되며 런타임 실행 중에도 **리플렉션(Reflection)을 통해 정보 조회가 가능**합니다. (동적 설정 분석 시 주로 활용).
+- **`@Documented`**: 애너테이션 정보가 javadoc으로 작성된 문서에 포함되도록 지시합니다.
+- **`@Inherited`**: 애너테이션이 자손 클래스에 상속되도록 설정합니다. 조상 클래스에 붙이면 자손 클래스에도 동일하게 선언된 것으로 간주됩니다.
+
+### 13. 사용자 정의 애너테이션 설계 규칙
+새로운 애너테이션을 개발자가 직접 선언할 때 지켜야 하는 문법과 규약입니다.
+- **선언 문법**: `@interface` 키워드를 사용해 정의합니다.
+  ```java
+  @Retention(RetentionPolicy.RUNTIME)
+  @interface MyAnnotation {
+      String value(); // 요소 선언
+      int count() default 1; // default 키워드로 기본값 부여 가능
+  }
+  ```
+- **애너테이션 요소(Element) 선언 규칙**:
+  1. 매개변수를 가질 수 없으며, 예외(`throws`)를 선언할 수 없습니다.
+  2. 요소의 반환 타입은 **기본형(primitive), String, enum, 애너테이션, Class 객체**만 가능합니다.
+  3. 요소의 이름 뒤에는 비어있는 괄호 `()`를 붙여야 합니다.
+  4. 기본값을 지정하고 싶을 때는 `default [기본값]` 형태로 선언합니다.
+
 ---
 
 ## 📂 파일 구성 및 학습 내용
@@ -197,4 +228,25 @@ class Ex12_07 {
         c.parentMethod();
     }
 }
+```
+
+---
+
+### 8. [Ex12_08.java](./src/Ex12_08.java) - 사용자 정의 애너테이션과 리플렉션
+- 커스텀 애너테이션 `@TestInfo`와 `@DateTime`을 설계하고 클래스 레벨에 적용하는 실습입니다.
+- 실행 시간에 메모리에 정보를 유지시키기 위한 메타 애너테이션 `@Retention(RetentionPolicy.RUNTIME)`의 활용법을 익히고, **리플렉션 API(`cls.getAnnotation()`, `cls.getAnnotations()`)**를 호출하여 클래스에 주입된 애너테이션 값과 메타 데이터를 동적으로 로드 및 출력하는 기법을 실습합니다.
+
+```java
+@Retention(RetentionPolicy.RUNTIME)
+@interface TestInfo {
+    int count() default 1;
+    String testedBy();
+    String[] testTools() default "JUnit";
+    DateTime testDate();
+}
+
+// 리플렉션을 통한 동적 정보 조회
+Class<Ex12_08> cls = Ex12_08.class;
+TestInfo anno = cls.getAnnotation(TestInfo.class);
+System.out.println("testedBy=" + anno.testedBy());
 ```
