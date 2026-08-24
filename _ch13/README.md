@@ -156,3 +156,33 @@ th2.setPriority(7);
 th1.start();
 th2.start();
 ```
+
+---
+
+### 6. [Ex13_06.java](./src/Ex13_06.java) - 데몬 쓰레드와 자동 저장 기능
+- `t.setDaemon(true)` 설정을 통해 백그라운드 보조 역할을 담당하는 데몬 쓰레드를 작성하고 실행하는 예제입니다.
+- 메인 루프가 종료될 때 데몬 쓰레드가 더 이상 기동하지 않고 프로세스와 동반 강제 종료되는 규칙을 학습합니다.
+
+```java
+Thread t = new Thread(new Ex13_06());
+t.setDaemon(true); // 데몬 쓰레드로 설정 (start 호출 전에 지정 필수)
+t.start();
+```
+
+---
+
+### 7. [Ex13_07.java](./src/Ex13_07.java) - sleep()의 현재 쓰레드 영향 제어
+- 쓰레드 인스턴스로 `th1.sleep(2000)` 처럼 인스턴스 메서드로서 호출하더라도, 실제로 잠드는 주체는 th1이 아닌 **이 명령을 직접 호출해 실행 중인 main 쓰레드**임을 눈으로 식별하고 학습합니다.
+- `sleep()`은 항상 실행 흐름 자체(Current Thread)에 동작하므로, 정적 지시어인 `Thread.sleep(ms)`를 사용해야 오용을 막을 수 있음을 이해합니다.
+
+---
+
+### 8. [Ex13_08.java](./src/Ex13_08.java) - interrupt()를 이용한 쓰레드 작업 강제 취소
+- 다이얼로그 입력 창을 띄워 사용자 입력을 받는 동안, 10부터 1까지 카운트다운을 백그라운드에서 실행하는 예제입니다.
+- 사용자가 값을 입력하는 즉시 `th1.interrupt()`를 발생시켜 대기 상태를 풀고 카운트다운을 조기에 정지하는 흐름 조절 문법을 실습합니다.
+
+```java
+String input = JOptionPane.showInputDialog("아무 값이나 입력하세요.");
+th1.interrupt(); // th1에 인터럽트 전송
+System.out.println("isInterrupted(): " + th1.isInterrupted()); // 인터럽트 상태 체크
+```
