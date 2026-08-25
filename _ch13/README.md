@@ -224,3 +224,16 @@ String input = JOptionPane.showInputDialog("아무 값이나 입력하세요.");
 th1.interrupt(); // th1에 인터럽트 전송
 System.out.println("isInterrupted(): " + th1.isInterrupted()); // 인터럽트 상태 체크
 ```
+
+---
+
+### 9. [Ex13_09.java](./src/Ex13_09.java) - join()을 활용한 멀티쓰레드 병행 실행 및 최종 시간 계측
+- 두 쓰레드(`ThreadEx9_1`, `ThreadEx9_2`)가 각각 비동기 루프를 돌며 `-`와 `|` 문자를 출력하게 하고, 메인 쓰레드에서 두 개의 `join()`을 순차적으로 대기시킵니다.
+- 두 비동기 쓰레드가 모두 완료될 때까지 메인 쓰레드가 대기(Waiting)함으로써 병행 실행에 소요된 총 소요 시간을 정확하게 계산해 내는 실습을 진행합니다.
+
+```java
+try {
+    th1.join(); // main 쓰레드가 th1의 완료를 대기
+    th2.join(); // main 쓰레드가 th2의 완료를 대기
+} catch(InterruptedException e) {}
+```
