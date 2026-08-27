@@ -237,3 +237,18 @@ try {
     th2.join(); // main 쓰레드가 th2의 완료를 대기
 } catch(InterruptedException e) {}
 ```
+
+---
+
+### 10. [Ex13_10.java](./src/Ex13_10.java) - 멀티쓰레드 환경에서의 데이터 동기화 (synchronized)
+- 멀티쓰레드 환경에서 여러 쓰레드가 공통된 자원(여기서는 `Account` 인스턴스의 잔고 `balance`)에 동시에 접근할 때 발생할 수 있는 동시성 문제(Race Condition)를 학습합니다.
+- 메서드 선언부에 `synchronized` 키워드를 부여하여, 특정 쓰레드가 출금 작업(`withdraw()`)을 수행하는 동안 다른 쓰레드가 진입하지 못하도록 락(Lock)을 걸어 데이터의 무결성을 보장하는 구조를 실습합니다.
+
+```java
+public synchronized void withdraw(int money) {
+    if (balance >= money) {
+        try { Thread.sleep(1000); } catch(InterruptedException e) {}
+        balance -= money;
+    }
+}
+```
