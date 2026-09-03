@@ -1,18 +1,27 @@
-## Getting Started
+# 📚 Chapter 14: 람다식(Lambda Expression)
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+자바 8부터 추가된 **람다식(Lambda Expression)**은 메서드를 하나의 식(expression)으로 표현한 것입니다. 코드를 간결하고 명확하게 만들어주며, 자바의 객체지향적 특성 안에서 함수형 프로그래밍 기법을 도입할 수 있도록 해줍니다.
 
-## Folder Structure
+---
 
-The workspace contains two folders by default, where:
+## 📌 주요 학습 내용
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+### 1. 람다식의 본질 (`Ex14_01.java`)
+- 람다식은 형태상으로는 익명 함수(Anonymous function)처럼 보이지만, 실제로는 자바에서 **익명 객체의 생성과 선언을 동시에 수행하는 것**입니다.
+- 메서드는 반드시 클래스 내부에 있어야 하므로, 람다식은 사실 이 메서드를 가지고 있는 익명 클래스의 객체를 의미합니다.
+- `@FunctionalInterface` 어노테이션을 사용하여 단 하나의 추상 메서드만 가진 함수형 인터페이스를 정의하고 람다식을 연결할 수 있습니다.
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+### 2. 람다식의 매개변수 및 반환 (`Ex14_02.java`)
+- 람다식(함수형 인터페이스 참조변수)은 메서드의 **매개변수**로 전달되거나, 메서드의 **반환값**으로 사용될 수 있습니다.
+- 이를 통해 코드를 더욱 유연하게 작성하고 동작(Behavior) 자체를 변수처럼 다룰 수 있습니다.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+### 3. `java.util.function` 패키지 (`Ex14_03.java`)
+자주 쓰이는 형식의 메서드를 미리 함수형 인터페이스로 정의해 놓은 표준 패키지입니다.
+- **`Supplier<T>`**: 매개변수는 없고 반환값만 있음 (`get()`)
+- **`Consumer<T>`**: 매개변수만 있고 반환값은 없음 (`accept()`)
+- **`Predicate<T>`**: 조건식을 표현할 때 사용, `boolean` 반환 (`test()`)
+- **`Function<T, R>`**: 일반적인 함수, 하나의 매개변수를 받아 결과를 반환 (`apply()`)
 
-## Dependency Management
+---
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+> 💡 **핵심 요약**: 람다식은 단순한 익명 함수가 아니라 **익명 객체(인스턴스)**이며, 자바의 강력한 표준 함수형 인터페이스들과 결합하여 매우 효율적인 데이터 처리 로직을 작성할 수 있게 해줍니다.
